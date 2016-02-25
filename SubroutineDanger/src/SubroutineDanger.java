@@ -212,9 +212,13 @@ public class SubroutineDanger {
 			double ffm, double wind, double timber, double grass, double fload) {
 		
 		buo= buo + df;
-		// adjust the grass spread index for heavy fuel lags
+		/**
+		 * adjust the grass spread index for heavy fuel lags
+		 */
 		adfm = .9 * ffm + 9.5 * Math.exp(-buo / 50);
-		// test to see if the fuel mixture are greater than 30 percent
+		/**
+		 *  test to see if the fuel mixture are greater than 30 percent
+		 */
 		if (adfm < 30) {
 			if (wind < 14) {
 				timber = (.01312 * (wind + 6))
@@ -227,7 +231,9 @@ public class SubroutineDanger {
 		} else {
 			if (ffm > 30) {
 				timber = 1;
-				// test to see if the wind speed is greater than 14
+				/**
+				 *  test to see if the wind speed is greater than 14
+				 */
 				if (wind < 14) {
 					grass = (.01312 * (wind + 6))
 							* (Math.pow((33 - ffm), 1.65) - 3);
@@ -235,14 +241,20 @@ public class SubroutineDanger {
 						timber = 1;
 						if (grass < 1) {
 							grass = 1;
-							// computing fire loads.
+							/**
+							 *  computing fire loads.
+							 */
 							Fload(timber, buo, fload);
 						} else {
-							// compute the fire load 
+							/**
+							 *  compute the fire load 
+							 */
 							Fload(timber, buo, fload);
 						}
 					} else {
-						// compute the fire load
+						/**
+						 *  compute the fire load
+						 */
 						Fload(timber, buo, fload);
 					}
 
@@ -250,7 +262,9 @@ public class SubroutineDanger {
 					grass = (.00918 * (wind + 14))
 							* Math.pow((33 - ffm), (1.65 - 3));
 					if (grass <= 99) {
-						// compute the fire load
+						/**
+						 *  compute the fire load
+						 */
 						Fload(timber, buo, fload);
 					} else {
 						grass = 99;
