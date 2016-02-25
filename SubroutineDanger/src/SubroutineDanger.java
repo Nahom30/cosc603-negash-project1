@@ -2,7 +2,6 @@ import java.math.*;
 import java.io.*;
 import java.util.*;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SubroutineDanger.
  */
@@ -15,7 +14,9 @@ public class SubroutineDanger {
 	 */
 	public static void main(String[] args) {
 		Scanner reader = new Scanner(System.in);
-		// initializing subroutines
+		/**
+		 *  initializing variables
+		 */
 		double dry = 0;
 		double wet = 0;
 		double iSnow;
@@ -134,13 +135,7 @@ public class SubroutineDanger {
 					System.out
 							.println("How many inches of rain on the ground?");
 					precip = reader.nextDouble();
-					if (precip > .1) { // #2
-						buo = 50 * Math.log((1 - Math.exp(-buo / 50))
-								* Math.exp(-1.175 * (precip - .1)));
-						if (buo < 0) {
-							buo = 0;
-						}
-					}
+					buo = calculateBuildUpIndex(precip, buo);
 				}
 			}
 		}
@@ -182,6 +177,24 @@ public class SubroutineDanger {
 		return fload;
 	}
 
+	/**
+	 * Calculate buo.
+	 *
+	 * @param perciptation the perciptation
+	 * @param buo double
+	 * @return the double
+	 */
+	public static double calculateBuildUpIndex(double perciptation, double buo){
+		if (perciptation > .1) { // #2
+			buo = 50 * Math.log((1 - Math.exp(-buo / 50))
+					* Math.exp(-1.175 * (perciptation - .1)));
+			if (buo < 0) {
+				buo = 0;
+			}
+		}
+		return buo;
+	}
+	
 	/**
 	 * Calculating current build up.
 	 *
