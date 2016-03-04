@@ -40,7 +40,7 @@ public class SubroutineDanger {
 		double[] b = { 30.0, 19.2, 13.8, 22.4 };
 		double[] c = { 4.5, 12.5, 27.5 };
 		double[] d = { 16.0, 10.0, 7.0, 5.0, 4.0, 3.0 };
-		String sOutput;
+		String isSnowing;
 		String pOutput;
 		String pOutput2;
 		
@@ -48,7 +48,7 @@ public class SubroutineDanger {
 		 *  test to see if any snow on the ground
 		 */
 		System.out.println("Is it snowing? yes/no or y/n");
-		sOutput = reader.next();
+		isSnowing = reader.next();
 		System.out.println("What is the dry bulb temprature?");
 		dry = reader.nextDouble();
 		System.out.println("What is the wet bulb tempture? ");
@@ -60,7 +60,7 @@ public class SubroutineDanger {
 		System.out
 				.println("What is the current herb state of the district: 1=cured, 2= Transition 3= Green");
 		iHerb = reader.nextDouble();
-		if (sOutput.equals("y") || sOutput.equals("yes")) {
+		if (isSnowing.equals("y") || isSnowing.equals("yes")) {
 			System.out.println("How many inches of snow on the ground? ");
 			iSnow = reader.nextDouble();
 			/**
