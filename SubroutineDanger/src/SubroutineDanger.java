@@ -17,6 +17,7 @@ public class SubroutineDanger {
 		/**
 		 *  initializing variables
 		 */
+		
 		double dry = 0;
 		double wet = 0;
 		double iSnow;
