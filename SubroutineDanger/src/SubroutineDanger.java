@@ -14,10 +14,7 @@ public class SubroutineDanger {
 	 */
 	public static void main(String[] args) {
 		Scanner reader = new Scanner(System.in);
-		/**
-		 *  initializing variables
-		 */
-		
+	
 		double dry = 0;
 		double wet = 0;
 		double iSnow;
@@ -33,20 +30,15 @@ public class SubroutineDanger {
 		double adfm = 99;
 		double fload = 0;
 		
-		/**
-		 *  table values used in computing danger ratings
-		 */
+		
+		
 		double[] a = { -0.185900, -0.85900, -0.059960, -0.077373 };
 		double[] b = { 30.0, 19.2, 13.8, 22.4 };
 		double[] c = { 4.5, 12.5, 27.5 };
 		double[] d = { 16.0, 10.0, 7.0, 5.0, 4.0, 3.0 };
 		String isSnowing;
 		String isRaining;
-		String pOutput2;
 		
-		/**
-		 *  test to see if any snow on the ground
-		 */
 		System.out.println("Is it snowing? yes/no or y/n");
 		isSnowing = reader.next();
 		System.out.println("What is the dry bulb temprature?");
@@ -63,20 +55,13 @@ public class SubroutineDanger {
 		if (isSnowing.equals("y") || isSnowing.equals("yes")) {
 			System.out.println("How many inches of snow on the ground? ");
 			iSnow = reader.nextDouble();
-			/**
-			 *  testing to see if there is snow on the ground
-			 */
 			if (iSnow <= 0) {
 				dif = dry - wet;
-				/**
-				 *  compute spread indexes and fire loads
-				 */
+		
 				for (int i = 1; i <= 3; i++) {
 					if (dif <= c[i]) {
 						ffm = b[i] * Math.exp(a[i] * dif);
-						/**
-						 *  Drying Factor for the day
-						 */
+						
 						for (int j = 1; j <= 6; j++) {
 							if (ffm <= d[j]) {
 								df = 7;
@@ -86,30 +71,16 @@ public class SubroutineDanger {
 									ffm = ffm + ((iHerb - 1) * 5);
 									System.out
 											.println("Is it raining?yes/no or y/n");
-									pOutput2 = reader.next();
-									if (pOutput2.equals("y")
-											|| pOutput2.equals("yes")) {
+									isRaining = reader.next();
+									if (isRaining.equals("y")
+											|| isRaining.equals("yes")) {
 										System.out
 												.println("How many inches of rain on the ground?");
 										precip = reader.nextDouble();
-										/**
-										 *  adjust BUI for precipitation before
-										 *  adding drying factor.
-										 */
-										if (precip <= .1) {
-											CurrentBuildUp(buildIndex, df, ffm,
-													isWindy, timber, grass, fload);
-										} else {
-											calculateBuildUpIndex(precip, buildIndex);
-							
-											if (buildIndex < 0) {
-												buildIndex = 0.0;
-											} else {
-												CurrentBuildUp(buildIndex, df,
-														ffm, isWindy, timber,
-														grass, fload);
-											}
-										}
+					
+										buildIndex = adjustBuildIndex(precip,
+												isWindy, buildIndex, grass,
+												timber, df, ffm, fload);
 									}
 								}
 							} else {
@@ -146,6 +117,26 @@ public class SubroutineDanger {
 		System.out.println("Timber Spread Index:   "+timber);
 		System.out.println("Fire Load Rating:      "+fload );
 		System.out.println("Build Up Index:        "+ buildIndex );
+	}
+
+	public static double adjustBuildIndex(double precip, double isWindy,
+			double buildIndex, double grass, double timber, double df,
+			double ffm, double fload) {
+		if (precip <= .1) {
+			CurrentBuildUp(buildIndex, df, ffm,
+					isWindy, timber, grass, fload);
+		} else {
+			calculateBuildUpIndex(precip, buildIndex);
+
+			if (buildIndex < 0) {
+				buildIndex = 0.0;
+			} else {
+				CurrentBuildUp(buildIndex, df,
+						ffm, isWindy, timber,
+						grass, fload);
+			}
+		}
+		return buildIndex;
 	}
 
 	/**
@@ -211,47 +202,14 @@ public class SubroutineDanger {
 			double ffm, double wind, double timber, double grass, double fload) {
 		double adfm; 
 		buildIndex= buildIndex + df;
-		/**
-		 * adjust the grass spread index for heavy fuel lags
-		 */
+		
 		adfm = .9 * ffm + 9.5 * Math.exp(-buildIndex / 50);
-		/**
-		 *  test to see if the fuel mixture are greater than 30 percent
-		 */
+		
 		if (adfm < 30) {
 			calculateTimber(wind, ffm, adfm); 
 		} else {
 			if (ffm > 30) {
-				timber = 1;
-				/**
-				 *  test to see if the wind speed is greater than 14
-				 */
-				if (wind < 14) {
-					grass = (.01312 * (wind + 6))
-							* (Math.pow((33 - ffm), 1.65) - 3);
-					if (timber <= 1) {
-						timber = 1;
-						fireLoad(buildIndex, timber, grass, fload);
-					} else {
-						/**
-						 *  compute the fire load
-						 */
-						calculateFireLoads(timber, buildIndex, fload);
-					}
-
-				} else {
-					grass = (.00918 * (wind + 14))
-							* Math.pow((33 - ffm), (1.65 - 3));
-					if (grass <= 99) {
-						/**
-						 *  compute the fire load
-						 */
-						calculateFireLoads(timber, buildIndex, fload);
-					} else {
-						grass = 99;
-					}
-				}
-
+				determineWind(buildIndex, ffm, wind, timber, fload);
 			} else {
 				grass = 1;
 				timber = 1;
@@ -260,26 +218,49 @@ public class SubroutineDanger {
 		return adfm;
 	}
 
+	public static void determineWind(double buildIndex, double ffm,
+			double wind, double timber, double fload) {
+		double grass;
+		if (wind < 14) {
+			double n =6; 
+			grass = calculateGrass(ffm, wind, n);
+			if (timber <= 1) {
+				timber = 1;
+				fireLoad(buildIndex, timber, grass, fload);
+			} else {
+				calculateFireLoads(timber, buildIndex, fload);
+			}
+
+		} else {
+			double n= 14; 
+			grass = calculateGrass(ffm, wind, n);
+			if (grass <= 99) {
+				calculateFireLoads(timber, buildIndex, fload);
+			} else {
+				grass = 99;
+			}
+		}
+	}
+
+	public static double calculateGrass(double ffm, double wind, double n) {
+		double grass;
+		grass = (.01312 * (wind + n))
+				* (Math.pow((33 - ffm), 1.65) - 3);
+		return grass;
+	}
+
 	public static void fireLoad(double buildIndex, double timber, double grass,
 			double fload) {
-		if (grass < 1) {
-			grass = 1;
-			/**
-			 *  computing fire loads.
-			 */
-			calculateFireLoads(timber, buildIndex, fload);
-		} else {
-			/**
-			 *  compute the fire load 
-			 */
-			calculateFireLoads(timber, buildIndex, fload);
+		if (grass < 1){ 
+			grass=1; 
+		}else {
+			calculateFireLoads(timber, buildIndex, fload);	
 		}
 	}
 	public static double calculateTimber(double wind, double ffm, double adfm ){
-		double timber; 
+		double timber = 0; 
 		if (wind < 14) {
-			timber = (.01312 * (wind + 6))
-					* (Math.pow((33 - ffm), 1.65) - 3);
+			timber = calculateGrass(ffm, wind, timber);
 
 		} else {
 			timber = (.000918 * (wind + 14))
