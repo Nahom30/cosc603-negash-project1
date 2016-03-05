@@ -23,7 +23,7 @@ public class SubroutineDanger {
 		double iSnow;
 		double precip;
 		double isWindy;
-		double buo;
+		double buildIndex;
 		double iHerb;
 		double grass = 0;
 		double timber = 0;
@@ -56,7 +56,7 @@ public class SubroutineDanger {
 		System.out.println("What is the current wind speed?");
 		isWindy = reader.nextDouble();
 		System.out.println("What is the last value of the build up index");
-		buo = reader.nextDouble();
+		buildIndex = reader.nextDouble();
 		System.out
 				.println("What is the current herb state of the district: 1=cured, 2= Transition 3= Green");
 		iHerb = reader.nextDouble();
@@ -97,17 +97,17 @@ public class SubroutineDanger {
 										 *  adding drying factor.
 										 */
 										if (precip <= .1) {
-											CurrentBuildUp(buo, df, adfm, ffm,
+											CurrentBuildUp(buildIndex, df, adfm, ffm,
 													isWindy, timber, grass, fload);
 										} else {
-											buo = 50 * Math.log((1 - Math
-													.exp(-buo / 50))
+											buildIndex = 50 * Math.log((1 - Math
+													.exp(-buildIndex / 50))
 													* Math.exp(-1.175
 															* (precip - .1)));
-											if (buo < 0) {
-												buo = 0.0;
+											if (buildIndex < 0) {
+												buildIndex = 0.0;
 											} else {
-												CurrentBuildUp(buo, df, adfm,
+												CurrentBuildUp(buildIndex, df, adfm,
 														ffm, isWindy, timber,
 														grass, fload);
 											}
@@ -136,7 +136,7 @@ public class SubroutineDanger {
 					System.out
 							.println("How many inches of rain on the ground?");
 					precip = reader.nextDouble();
-					buo = calculateBuildUpIndex(precip, buo);
+					buildIndex = calculateBuildUpIndex(precip, buildIndex);
 				}
 			}
 		}
@@ -147,7 +147,7 @@ public class SubroutineDanger {
 		System.out.println("Grass Spread Index:    "+ grass);
 		System.out.println("Timber Spread Index:   "+timber);
 		System.out.println("Fire Load Rating:      "+fload );
-		System.out.println("Build Up Index:        "+ buo );
+		System.out.println("Build Up Index:        "+ buildIndex );
 	}
 
 	/**
