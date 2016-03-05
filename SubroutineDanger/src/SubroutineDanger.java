@@ -65,24 +65,8 @@ public class SubroutineDanger {
 						for (int j = 1; j <= 6; j++) {
 							if (ffm <= d[j]) {
 								df = 7;
-								if (ffm < 1) {
-									ffm = 1;
-								} else {
-									ffm = ffm + ((iHerb - 1) * 5);
-									System.out
-											.println("Is it raining?yes/no or y/n");
-									isRaining = reader.next();
-									if (isRaining.equals("y")
-											|| isRaining.equals("yes")) {
-										System.out
-												.println("How many inches of rain on the ground?");
-										precip = reader.nextDouble();
-					
-										buildIndex = adjustBuildIndex(precip,
-												isWindy, buildIndex, grass,
-												timber, df, ffm, fload);
-									}
-								}
+								determineFineFuelMoisture(ffm,iHerb, isWindy); 
+								
 							} else {
 								df = d[j - 1];
 							}
@@ -117,6 +101,31 @@ public class SubroutineDanger {
 		System.out.println("Timber Spread Index:   "+timber);
 		System.out.println("Fire Load Rating:      "+fload );
 		System.out.println("Build Up Index:        "+ buildIndex );
+	}
+	public static double determineFineFuelMoisture(double ffm, double iHerb, double isWindy){
+		Scanner reader = new Scanner(System.in);
+		String isRaining; 
+		double grass= 0; 
+		double fload =0; 
+		double buildIndex =0;  
+		double timber =0;
+		double df =0; 
+		double percip; 
+		if (ffm < 1) {
+			ffm = 1;
+		} else {
+			ffm = ffm + ((iHerb - 1) * 5);
+			System.out.println("Is it raining?yes/no or y/n");
+			isRaining = reader.next();
+			if (isRaining.equals("y")|| isRaining.equals("yes")) {
+				System.out.println("How many inches of rain on the ground?");
+				percip = reader.nextDouble();
+				buildIndex = adjustBuildIndex(percip,
+						isWindy, buildIndex, grass,
+						timber, df, ffm, fload);
+			}
+		}
+		return ffm; 
 	}
 
 	public static double adjustBuildIndex(double precip, double isWindy,
