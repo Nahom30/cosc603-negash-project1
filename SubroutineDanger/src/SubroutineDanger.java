@@ -41,7 +41,7 @@ public class SubroutineDanger {
 		double[] c = { 4.5, 12.5, 27.5 };
 		double[] d = { 16.0, 10.0, 7.0, 5.0, 4.0, 3.0 };
 		String isSnowing;
-		String pOutput;
+		String isRaining;
 		String pOutput2;
 		
 		/**
@@ -126,11 +126,11 @@ public class SubroutineDanger {
 				grass = 0;
 				fload = 0;
 				System.out.println("Is it raining? yes/no or y/n");
-				pOutput = reader.next();
+				isRaining = reader.next();
 				/**
 				 *  checking if it's raining
 				 */
-				if (pOutput.equals("y") || pOutput.equals("yes")) {
+				if (isRaining.equals("y") || isRaining.equals("yes")) {
 					System.out
 							.println("How many inches of rain on the ground?");
 					precip = reader.nextDouble();
@@ -156,7 +156,7 @@ public class SubroutineDanger {
 	 * @param fload the fload
 	 * @return the double
 	 */
-	public static double fireLoads(double timber, double buildIndex, double fload) {
+	public static double calculateFireLoads(double timber, double buildIndex, double fload) {
 
 		if (timber > 0) {
 			if (buildIndex > 0) {
@@ -231,23 +231,12 @@ public class SubroutineDanger {
 							* (Math.pow((33 - ffm), 1.65) - 3);
 					if (timber <= 1) {
 						timber = 1;
-						if (grass < 1) {
-							grass = 1;
-							/**
-							 *  computing fire loads.
-							 */
-							fireLoads(timber, buildIndex, fload);
-						} else {
-							/**
-							 *  compute the fire load 
-							 */
-							fireLoads(timber, buildIndex, fload);
-						}
+						fireLoad(buildIndex, timber, grass, fload);
 					} else {
 						/**
 						 *  compute the fire load
 						 */
-						fireLoads(timber, buildIndex, fload);
+						calculateFireLoads(timber, buildIndex, fload);
 					}
 
 				} else {
@@ -257,7 +246,7 @@ public class SubroutineDanger {
 						/**
 						 *  compute the fire load
 						 */
-						fireLoads(timber, buildIndex, fload);
+						calculateFireLoads(timber, buildIndex, fload);
 					} else {
 						grass = 99;
 					}
@@ -269,6 +258,22 @@ public class SubroutineDanger {
 			}
 		}
 		return adfm;
+	}
+
+	public static void fireLoad(double buildIndex, double timber, double grass,
+			double fload) {
+		if (grass < 1) {
+			grass = 1;
+			/**
+			 *  computing fire loads.
+			 */
+			calculateFireLoads(timber, buildIndex, fload);
+		} else {
+			/**
+			 *  compute the fire load 
+			 */
+			calculateFireLoads(timber, buildIndex, fload);
+		}
 	}
 	public static double calculateTimber(double wind, double ffm, double adfm ){
 		double timber; 
