@@ -22,7 +22,7 @@ public class SubroutineDanger {
 		double wet = 0;
 		double iSnow;
 		double precip;
-		double wind;
+		double isWindy;
 		double buo;
 		double iHerb;
 		double grass = 0;
@@ -54,7 +54,7 @@ public class SubroutineDanger {
 		System.out.println("What is the wet bulb tempture? ");
 		wet = reader.nextDouble();
 		System.out.println("What is the current wind speed?");
-		wind = reader.nextDouble();
+		isWindy = reader.nextDouble();
 		System.out.println("What is the last value of the build up index");
 		buo = reader.nextDouble();
 		System.out
@@ -98,7 +98,7 @@ public class SubroutineDanger {
 										 */
 										if (precip <= .1) {
 											CurrentBuildUp(buo, df, adfm, ffm,
-													wind, timber, grass, fload);
+													isWindy, timber, grass, fload);
 										} else {
 											buo = 50 * Math.log((1 - Math
 													.exp(-buo / 50))
@@ -108,7 +108,7 @@ public class SubroutineDanger {
 												buo = 0.0;
 											} else {
 												CurrentBuildUp(buo, df, adfm,
-														ffm, wind, timber,
+														ffm, isWindy, timber,
 														grass, fload);
 											}
 										}
