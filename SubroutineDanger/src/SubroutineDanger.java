@@ -97,17 +97,15 @@ public class SubroutineDanger {
 										 *  adding drying factor.
 										 */
 										if (precip <= .1) {
-											CurrentBuildUp(buildIndex, df, adfm, ffm,
+											CurrentBuildUp(buildIndex, df, ffm,
 													isWindy, timber, grass, fload);
 										} else {
-											buildIndex = 50 * Math.log((1 - Math
-													.exp(-buildIndex / 50))
-													* Math.exp(-1.175
-															* (precip - .1)));
+											calculateBuildUpIndex(precip, buildIndex);
+							
 											if (buildIndex < 0) {
 												buildIndex = 0.0;
 											} else {
-												CurrentBuildUp(buildIndex, df, adfm,
+												CurrentBuildUp(buildIndex, df,
 														ffm, isWindy, timber,
 														grass, fload);
 											}
@@ -154,16 +152,16 @@ public class SubroutineDanger {
 	 * Fload.
 	 *
 	 * @param timber the timber
-	 * @param buo the buo
+	 * @param buildIndex the buo
 	 * @param fload the fload
 	 * @return the double
 	 */
-	public static double Fload(double timber, double buo, double fload) {
+	public static double fireLoads(double timber, double buildIndex, double fload) {
 
 		if (timber > 0) {
-			if (buo > 0) {
+			if (buildIndex > 0) {
 				fload = 1.75 * Math.log10(timber) + 32
-						* (Math.log10(buo) - 1.640);
+						* (Math.log10(buildIndex) - 1.640);
 				if (fload <= 0) {
 					fload = 0;
 				}
@@ -173,7 +171,7 @@ public class SubroutineDanger {
 			}
 		} else {
 			timber = 0;
-			buo = 0;
+			buildIndex = 0;
 		}
 		return fload;
 	}
@@ -182,24 +180,24 @@ public class SubroutineDanger {
 	 * Calculate buo.
 	 *
 	 * @param perciptation the perciptation
-	 * @param buo double
+	 * @param buildIndex double
 	 * @return the double
 	 */
-	public static double calculateBuildUpIndex(double perciptation, double buo){
+	public static double calculateBuildUpIndex(double perciptation, double buildIndex){
 		if (perciptation > .1) { // #2
-			buo = 50 * Math.log((1 - Math.exp(-buo / 50))
+			buildIndex = 50 * Math.log((1 - Math.exp(-buildIndex / 50))
 					* Math.exp(-1.175 * (perciptation - .1)));
-			if (buo < 0) {
-				buo = 0;
+			if (buildIndex < 0) {
+				buildIndex = 0;
 			}
 		}
-		return buo;
+		return buildIndex;
 	}
 	
 	/**
 	 * Calculating current build up.
 	 *
-	 * @param buo the buo
+	 * @param buildIndex the buo
 	 * @param df the df
 	 * @param adfm the adfm
 	 * @param ffm the ffm
@@ -209,26 +207,19 @@ public class SubroutineDanger {
 	 * @param fload the fload
 	 * @return the double
 	 */
-	public static double CurrentBuildUp(double buo, double df, double adfm,
+	public static double CurrentBuildUp(double buildIndex, double df,
 			double ffm, double wind, double timber, double grass, double fload) {
-		
-		buo= buo + df;
+		double adfm; 
+		buildIndex= buildIndex + df;
 		/**
 		 * adjust the grass spread index for heavy fuel lags
 		 */
-		adfm = .9 * ffm + 9.5 * Math.exp(-buo / 50);
+		adfm = .9 * ffm + 9.5 * Math.exp(-buildIndex / 50);
 		/**
 		 *  test to see if the fuel mixture are greater than 30 percent
 		 */
 		if (adfm < 30) {
-			if (wind < 14) {
-				timber = (.01312 * (wind + 6))
-						* (Math.pow((33 - ffm), 1.65) - 3);
-
-			} else {
-				timber = (.000918 * (wind + 14))
-						* (Math.pow((33 - adfm), 1.65) - 3);
-			}
+			calculateTimber(wind, ffm, adfm); 
 		} else {
 			if (ffm > 30) {
 				timber = 1;
@@ -245,18 +236,18 @@ public class SubroutineDanger {
 							/**
 							 *  computing fire loads.
 							 */
-							Fload(timber, buo, fload);
+							fireLoads(timber, buildIndex, fload);
 						} else {
 							/**
 							 *  compute the fire load 
 							 */
-							Fload(timber, buo, fload);
+							fireLoads(timber, buildIndex, fload);
 						}
 					} else {
 						/**
 						 *  compute the fire load
 						 */
-						Fload(timber, buo, fload);
+						fireLoads(timber, buildIndex, fload);
 					}
 
 				} else {
@@ -266,7 +257,7 @@ public class SubroutineDanger {
 						/**
 						 *  compute the fire load
 						 */
-						Fload(timber, buo, fload);
+						fireLoads(timber, buildIndex, fload);
 					} else {
 						grass = 99;
 					}
@@ -277,6 +268,18 @@ public class SubroutineDanger {
 				timber = 1;
 			}
 		}
-		return buo;
+		return adfm;
+	}
+	public static double calculateTimber(double wind, double ffm, double adfm ){
+		double timber; 
+		if (wind < 14) {
+			timber = (.01312 * (wind + 6))
+					* (Math.pow((33 - ffm), 1.65) - 3);
+
+		} else {
+			timber = (.000918 * (wind + 14))
+					* (Math.pow((33 - adfm), 1.65) - 3);
+		}
+		return timber; 
 	}
 }
